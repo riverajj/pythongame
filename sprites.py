@@ -360,6 +360,21 @@ class Wall(pg.sprite.Sprite):
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
 
+class HealthBar(pg.sprite.Sprite) :
+    def __init__(self, game,x,y):
+        self.groups = game.all_sprites
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect(centerx = x,centery = y)
+        self.vel = vec(0,0)
+        self.pos = vec(x, y) * TILESIZE
+
+
+    def update(self):
+        self.rect.x = self.pos.x + 0 * TILESIZE
+        self.rect.y = self.pos.y + 1 * TILESIZE
 # class SquareGrid:
 #     def __init__(self, width, height):
 #         self.width = width

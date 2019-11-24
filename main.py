@@ -31,6 +31,7 @@ class Game:
         self.monsA = pg.sprite.Group()
         self.monsB = pg.sprite.Group()
         self.monsC = pg.sprite.Group()
+        
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -39,6 +40,7 @@ class Game:
                     # g.walls.append(vec(col,row))
                 if tile == 'P':
                     self.player = Player(self, col, row)
+                    HealthBar(self,col,row)
                 if tile == 'A':
                     MonsterA(self, col, row)
                 if tile == "B":
