@@ -14,6 +14,7 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
+        pg.draw.rect(game.screen, (255,0,0))
         # self.squaregrid = game.squaregrid
 
 

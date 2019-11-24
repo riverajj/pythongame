@@ -6,7 +6,6 @@ from settings import *
 from sprites import *
 from tilemap import *
 
-
 class Game:
     def __init__(self):
         pg.init()
@@ -18,7 +17,7 @@ class Game:
 
     def load_data(self):
         game_folder = path.dirname(__file__)
-        self.map = Map(path.join(game_folder, 'map2.txt'))
+        self.map = Map(path.join(game_folder, 'map5.txt'))
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -35,7 +34,6 @@ class Game:
         # self.squaregrid = g
         self.camera = Camera(self.map.width, self.map.height)
         
-
     def run(self):
         # game loop - set self.playing = False to end the game
         self.playing = True
@@ -44,10 +42,9 @@ class Game:
             self.events()
             self.update()
             self.draw()
-
     def quit(self):
         pg.quit()
-        sys.exit()
+       
 
     def update(self):
         # update portion of the game loop
@@ -75,7 +72,6 @@ class Game:
             if event.type == pg.KEYDOWN:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
-
     def show_start_screen(self):
         pass
 
