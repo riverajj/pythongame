@@ -28,8 +28,9 @@ class Game:
         self.monsters = pg.sprite.Group()
         self.non_enemy = pg.sprite.Group()
         self.non_player = pg.sprite.Group()
-        self.monsAB = pg.sprite.Group()
-
+        self.monsA = pg.sprite.Group()
+        self.monsB = pg.sprite.Group()
+        self.monsC = pg.sprite.Group()
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
