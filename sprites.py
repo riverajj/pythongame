@@ -14,7 +14,6 @@ class Player(pg.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
-        pg.draw.rect(game.screen, (255,0,0))
         # self.squaregrid = game.squaregrid
 
 
@@ -78,13 +77,97 @@ class Player(pg.sprite.Sprite):
                 self.vel.y = 0
                 self.rect.y = self.pos.y
 
+    def collide_with_player(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x 
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y    
+
     def update(self):
         self.get_keys(self.game)
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
         self.collide_with_walls('x')
+        self.collide_with_player('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
+        self.collide_with_player('y')
+
+class Monster(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.monsters
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect()
+        self.vel = vec(0,0)
+        self.pos = vec(x, y) * TILESIZE
+
+    def collide_with_walls(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x
+            
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y
+
+    def collide_with_player(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x 
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y
+
+    def update(self):
+        # self.get_keys(self.game)
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
+        self.collide_with_walls('x')
+        self.collide_with_player('x')
+        self.rect.y = self.pos.y
+        self.collide_with_walls('y')
+        self.collide_with_player('y')
 
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):

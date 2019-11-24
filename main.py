@@ -5,6 +5,7 @@ from os import path
 from settings import *
 from sprites import *
 from tilemap import *
+import random
 
 class Game:
     def __init__(self):
@@ -23,6 +24,9 @@ class Game:
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
         self.walls = pg.sprite.Group()
+        self.players = pg.sprite.Group()
+        self.monsters = pg.sprite.Group()
+        
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -31,7 +35,10 @@ class Game:
                     # g.walls.append(vec(col,row))
                 if tile == 'P':
                     self.player = Player(self, col, row)
+                if tile == 'M':
+                    Monster(self, col, row)
         # self.squaregrid = g
+        
         self.camera = Camera(self.map.width, self.map.height)
         
     def run(self):
