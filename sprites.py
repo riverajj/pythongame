@@ -6,7 +6,7 @@ vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites, game.non_enemy
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -59,7 +59,7 @@ class Player(pg.sprite.Sprite):
 
     def collide_with_walls(self, dir):
         if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_player, False)
             if hits:
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width
@@ -68,48 +68,26 @@ class Player(pg.sprite.Sprite):
                 self.vel.x = 0
                 self.rect.x = self.pos.x
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_player, False)
             if hits:
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height
                 if self.vel.y < 0:
                     self.pos.y = hits[0].rect.bottom
                 self.vel.y = 0
-                self.rect.y = self.pos.y
-
-    def collide_with_player(self, dir):
-        if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.players, False)
-            if hits:
-                if self.vel.x > 0:
-                    self.pos.x = hits[0].rect.left - self.rect.width
-                if self.vel.x < 0:
-                    self.pos.x = hits[0].rect.right
-                self.vel.x = 0
-                self.rect.x = self.pos.x 
-        if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.players, False)
-            if hits:
-                if self.vel.y > 0:
-                    self.pos.y = hits[0].rect.top - self.rect.height
-                if self.vel.y < 0:
-                    self.pos.y = hits[0].rect.bottom
-                self.vel.y = 0
-                self.rect.y = self.pos.y    
+                self.rect.y = self.pos.y  
 
     def update(self):
         self.get_keys(self.game)
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
         self.collide_with_walls('x')
-        self.collide_with_player('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
-        self.collide_with_player('y')
 
-class Monster(pg.sprite.Sprite):
+class MonsterA(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.monsters
+        self.groups = game.all_sprites, game.monsters, game.non_player, game.monsAB
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))
@@ -117,9 +95,10 @@ class Monster(pg.sprite.Sprite):
         self.rect = self.image.get_rect(centerx = x,centery = y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
+
     def collide_with_walls(self, dir):
         if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
             if hits:
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width
@@ -129,7 +108,7 @@ class Monster(pg.sprite.Sprite):
                 self.rect.x = self.pos.x
             
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.walls, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
             if hits:
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height
@@ -137,7 +116,8 @@ class Monster(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom
                 self.vel.y = 0
                 self.rect.y = self.pos.y
-    def collide_with_monster(self, dir):
+
+    def collide_with_other_mons(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.monsters, False)
             if hits:
@@ -147,6 +127,7 @@ class Monster(pg.sprite.Sprite):
                     self.pos.x = hits[0].rect.right
                 self.vel.x = 0
                 self.rect.x = self.pos.x
+            
         if dir == 'y':
             hits = pg.sprite.spritecollide(self, self.game.monsters, False)
             if hits:
@@ -156,18 +137,56 @@ class Monster(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom
                 self.vel.y = 0
                 self.rect.y = self.pos.y
-    def collide_with_player(self, dir):
+
+    def chase_player(self):
+        if self.game.player.rect.centerx < self.rect.centerx:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x -= 2
+        elif self.game.player.rect.centerx > self.rect.centerx:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x += 2
+        if self.game.player.rect.centery < self.rect.centery:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y -= 2
+        elif self.game.player.rect.centery > self.rect.centery:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y += 2
+
+    def update(self):
+        # self.get_keys(self.game)
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
+        self.collide_with_walls('x')
+        # self.collide_with_monsters('x')
+        self.rect.y = self.pos.y
+        self.collide_with_walls('y')
+        # self.collide_with_monsters('y')
+        self.chase_player()
+
+class MonsterB(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.monsters, game.non_player, game.monsAB
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect(centerx = x,centery = y)
+        self.vel = vec(0,0)
+        self.pos = vec(x, y) * TILESIZE
+
+    def collide_with_walls(self, dir):
         if dir == 'x':
-            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
             if hits:
                 if self.vel.x > 0:
                     self.pos.x = hits[0].rect.left - self.rect.width
                 if self.vel.x < 0:
                     self.pos.x = hits[0].rect.right
                 self.vel.x = 0
-                self.rect.x = self.pos.x 
+                self.rect.x = self.pos.x
+            
         if dir == 'y':
-            hits = pg.sprite.spritecollide(self, self.game.players, False)
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
             if hits:
                 if self.vel.y > 0:
                     self.pos.y = hits[0].rect.top - self.rect.height
@@ -175,28 +194,89 @@ class Monster(pg.sprite.Sprite):
                     self.pos.y = hits[0].rect.bottom
                 self.vel.y = 0
                 self.rect.y = self.pos.y
+
+
     def chase_player(self):
         if self.game.player.rect.centerx < self.rect.centerx:
-            self.vel.x -= 2
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x -= 2
         elif self.game.player.rect.centerx > self.rect.centerx:
-            self.vel.x += 2
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x += 2
         if self.game.player.rect.centery < self.rect.centery:
-            self.vel.y -= 2
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y -= 2
         elif self.game.player.rect.centery > self.rect.centery:
-            self.vel.y += 2
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y += 2
+
     def update(self):
         # self.get_keys(self.game)
         self.pos += self.vel * self.game.dt
         self.rect.x = self.pos.x
         self.collide_with_walls('x')
-        self.collide_with_player('x')
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
-        self.collide_with_player('y')
         self.chase_player()
+
+class MonsterC(pg.sprite.Sprite):
+    def __init__(self, game, x, y):
+        self.groups = game.all_sprites, game.monsters, game.non_player
+        pg.sprite.Sprite.__init__(self, self.groups)
+        self.game = game
+        self.image = pg.Surface((TILESIZE, TILESIZE))
+        self.image.fill(RED)
+        self.rect = self.image.get_rect(centerx = x,centery = y)
+        self.vel = vec(0,0)
+        self.pos = vec(x, y) * TILESIZE
+
+    def collide_with_walls(self, dir):
+        if dir == 'x':
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
+            if hits:
+                if self.vel.x > 0:
+                    self.pos.x = hits[0].rect.left - self.rect.width
+                if self.vel.x < 0:
+                    self.pos.x = hits[0].rect.right
+                self.vel.x = 0
+                self.rect.x = self.pos.x
+            
+        if dir == 'y':
+            hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
+            if hits:
+                if self.vel.y > 0:
+                    self.pos.y = hits[0].rect.top - self.rect.height
+                if self.vel.y < 0:
+                    self.pos.y = hits[0].rect.bottom
+                self.vel.y = 0
+                self.rect.y = self.pos.y
+
+    def chase_player(self):
+        if self.game.player.rect.centerx < self.rect.centerx:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x -= 2
+        elif self.game.player.rect.centerx > self.rect.centerx:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.x += 2
+        if self.game.player.rect.centery < self.rect.centery:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y -= 2
+        elif self.game.player.rect.centery > self.rect.centery:
+            # if pg.sprite.spritecollide(self, self.game.all_sprites, False) :
+                self.vel.y += 2
+
+    def update(self):
+        # self.get_keys(self.game)
+        self.pos += self.vel * self.game.dt
+        self.rect.x = self.pos.x
+        self.collide_with_walls('x')
+        self.rect.y = self.pos.y
+        self.collide_with_walls('y')
+        self.chase_player()
+
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.walls
+        self.groups = game.all_sprites, game.walls, game.non_enemy, game.non_player
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE, TILESIZE))

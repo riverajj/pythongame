@@ -26,7 +26,10 @@ class Game:
         self.walls = pg.sprite.Group()
         self.players = pg.sprite.Group()
         self.monsters = pg.sprite.Group()
-        
+        self.non_enemy = pg.sprite.Group()
+        self.non_player = pg.sprite.Group()
+        self.monsAB = pg.sprite.Group()
+
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -35,8 +38,12 @@ class Game:
                     # g.walls.append(vec(col,row))
                 if tile == 'P':
                     self.player = Player(self, col, row)
-                if tile == 'M':
-                    Monster(self, col, row)
+                if tile == 'A':
+                    MonsterA(self, col, row)
+                if tile == "B":
+                    MonsterB(self, col, row)
+                if tile == "C":
+                    MonsterC(self, col, row)
         # self.squaregrid = g
         
         self.camera = Camera(self.map.width, self.map.height)
