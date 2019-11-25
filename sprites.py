@@ -1,22 +1,41 @@
 import pygame as pg
 from settings import *
 from collections import deque
+from tilemap import collide_hit_rect
 
 vec = pg.math.Vector2
 
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.non_enemy
+        self.groups = game.all_sprites,game.non_enemy
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(YELLOW)
+        self.image = game.player_img
+        # self.image.fill(YELLOW)
         self.rect = self.image.get_rect(centerx=x,centery=y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
+        self.health = PLAYER_HEALTH
+        self.x = x 
+        self.y = y   
+        self.hit_rect = PLAYER_HIT_RECT #for collision
+        self.hit_rect.center = self.rect.center # for collision
+    def draw_hitbox(self):
+        pg.draw.rect(self.image,RED,self.hit_rect, 64)
+   
+    def draw_health(self): #added this for health
+        if self.health > 60:
+            col = GREEN
+        elif self.health > 30:
+            col = YELLOW
+        else:
+            col = RED
+        width = int(self.rect.width * self.health / 100)
+        self.health_bar = pg.Rect(0, 0 , width, 5)
+        pg.draw.rect(self.image,col,self.health_bar)
         # self.squaregrid = game.squaregrid
 
-
+ 
     def get_keys(self, game):
         self.vel = vec(0,0)
         keys = pg.key.get_pressed()
@@ -29,6 +48,8 @@ class Player(pg.sprite.Sprite):
             self.vel.y = -PLAYER_SPEED
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel.y = PLAYER_SPEED
+        if keys[pg.K_z]:
+            self.weapon_sprite()
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
         # if pg.mouse.get_pressed()[0]:
@@ -78,12 +99,14 @@ class Player(pg.sprite.Sprite):
                 self.rect.y = self.pos.y  
 
     def update(self):
-        self.get_keys(self.game)
-        self.pos += self.vel * self.game.dt
-        self.rect.x = self.pos.x
-        self.collide_with_walls('x')
-        self.rect.y = self.pos.y
-        self.collide_with_walls('y')
+         self.get_keys(self.game)
+         self.pos += self.vel * self.game.dt
+         self.rect.x = self.pos.x
+         self.collide_with_walls('x')
+         self.rect.y = self.pos.y
+         self.collide_with_walls('y')
+         self.draw_health()
+         self.draw_hitbox
 
 class MonsterA(pg.sprite.Sprite):
     def __init__(self, game, x, y):
@@ -359,22 +382,34 @@ class Wall(pg.sprite.Sprite):
         self.y = y
         self.rect.x = x * TILESIZE
         self.rect.y = y * TILESIZE
-
-class HealthBar(pg.sprite.Sprite) :
-    def __init__(self, game,x,y):
+class weapon_sprite(pg.sprite.Sprite):
+    def __init__(self,game,x,y):
         self.groups = game.all_sprites
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = pg.Surface((TILESIZE, TILESIZE))
-        self.image.fill(RED)
-        self.rect = self.image.get_rect(centerx = x,centery = y)
+        self.image = pg.Surface((TILESIZE,TILESIZE/8))
+        self.image.fill(BLACK)
+        self.rect = self.image.get_rect(centerx=x,centery=y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
-
-
     def update(self):
-        self.rect.x = self.pos.x + 0 * TILESIZE
-        self.rect.y = self.pos.y + 1 * TILESIZE
+         self.pos += self.vel * self.game.dt
+         self.rect.x = self.pos.x   
+         self.rect.y = self.pos.y - 10
+#          def __init__(self, game,x,y):
+#         self.groups = game.all_sprites
+#         pg.sprite.Sprite.__init__(self, self.groups)
+#         self.game = game
+#         self.image = pg.Surface((TILESIZE, TILESIZE/8))
+#         self.image.fill(RED)
+#         self.rect = self.image.get_rect(centerx = x,centery = y)
+#         self.vel = vec(0,0)
+#         self.pos = vec(x, y) * TILESIZE
+
+
+#     def update(self):
+#         self.rect.x = self.pos.x + 0 * TILESIZE
+#         self.rect.y = self.pos.y + 1 * TILESIZE
 # class SquareGrid:
 #     def __init__(self, width, height):
 #         self.width = width

@@ -18,7 +18,9 @@ class Game:
 
     def load_data(self):
         game_folder = path.dirname(__file__)
-        self.map = Map(path.join(game_folder, 'map5.txt'))
+        img_folder = path.join(game_folder, 'img')
+        self.map = Map(path.join(game_folder, 'map2.txt'))
+        self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -31,7 +33,6 @@ class Game:
         self.monsA = pg.sprite.Group()
         self.monsB = pg.sprite.Group()
         self.monsC = pg.sprite.Group()
-        
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -40,7 +41,8 @@ class Game:
                     # g.walls.append(vec(col,row))
                 if tile == 'P':
                     self.player = Player(self, col, row)
-                    HealthBar(self,col,row)
+                    weapon_sprite(self,col,row)
+                    # HealthBar(self,col,row)
                 if tile == 'A':
                     MonsterA(self, col, row)
                 if tile == "B":
@@ -48,7 +50,7 @@ class Game:
                 if tile == "C":
                     MonsterC(self, col, row)
         # self.squaregrid = g
-        
+       
         self.camera = Camera(self.map.width, self.map.height)
         
     def run(self):
@@ -67,6 +69,12 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
+        hits = pg.sprite.spritecollide(self.player, self.non_player , False) #collision
+        for hit in hits:
+            self.player.health -= MOB_DAMAGE
+            hit.vel = vec(0,0)
+            print("test")
+
 
     def draw_grid(self):
         for x in range(0, WIDTH, TILESIZE):
@@ -76,8 +84,9 @@ class Game:
 
     def draw(self):
         self.screen.fill(BGCOLOR)
-        self.draw_grid()
         for sprite in self.all_sprites:
+            if isinstance(sprite,Player):
+                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
         pg.display.flip()
 

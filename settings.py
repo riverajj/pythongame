@@ -1,3 +1,5 @@
+import pygame as pg
+
 # define some colors (R, G, B)
 WHITE = (255, 255, 255)
 BLACK = (0, 0, 0)
@@ -20,3 +22,8 @@ GRIDHEIGHT = HEIGHT / TILESIZE
 
 # Player settings
 PLAYER_SPEED = 300
+PLAYER_HEALTH = 100
+PLAYER_IMG = 'baril2.png'
+PLAYER_HIT_RECT = pg.Rect(0, 0, 64, 64)
+#Monster settings
+MOB_DAMAGE = 2
