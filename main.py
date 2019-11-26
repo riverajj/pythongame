@@ -33,6 +33,7 @@ class Game:
         self.monsA = pg.sprite.Group()
         self.monsB = pg.sprite.Group()
         self.monsC = pg.sprite.Group()
+        self.weapon_sprite = pg.sprite.Group()
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -41,7 +42,6 @@ class Game:
                     # g.walls.append(vec(col,row))
                 if tile == 'P':
                     self.player = Player(self, col, row)
-                    weapon_sprite(self,col,row)
                     # HealthBar(self,col,row)
                 if tile == 'A':
                     MonsterA(self, col, row)
@@ -69,11 +69,8 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
-        hits = pg.sprite.spritecollide(self.player, self.non_player , False) #collision
-        for hit in hits:
-            self.player.health -= MOB_DAMAGE
-            hit.vel = vec(0,0)
-            print("test")
+        
+
 
 
     def draw_grid(self):

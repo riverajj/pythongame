@@ -20,8 +20,9 @@ class Player(pg.sprite.Sprite):
         self.y = y   
         self.hit_rect = PLAYER_HIT_RECT #for collision
         self.hit_rect.center = self.rect.center # for collision
+
     def draw_hitbox(self):
-        pg.draw.rect(self.image,RED,self.hit_rect, 64)
+        pg.draw.rect(self.image,RED,self.hit_rect)
    
     def draw_health(self): #added this for health
         if self.health > 60:
@@ -45,11 +46,12 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.vel.x = PLAYER_SPEED
         if keys[pg.K_UP] or keys[pg.K_w]:
-            self.vel.y = -PLAYER_SPEED
+            self.vel.y = -PLAYER_SPEED    
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel.y = PLAYER_SPEED
         if keys[pg.K_z]:
-            self.weapon_sprite()
+            weapon_sprite(self.game,self.pos.x + 16, self.pos.y - 10)
+
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
         # if pg.mouse.get_pressed()[0]:
@@ -107,7 +109,7 @@ class Player(pg.sprite.Sprite):
          self.collide_with_walls('y')
          self.draw_health()
          self.draw_hitbox
-
+         
 class MonsterA(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.monsters, game.non_player, game.monsA
@@ -118,7 +120,17 @@ class MonsterA(pg.sprite.Sprite):
         self.rect = self.image.get_rect(centerx = x,centery = y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
+        self.health = 100
 
+    def collide_attack(self):
+        hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
+        for hit in hits:
+            self.health -= 5
+            if self.health == 0:
+                self.kill()
+            hit.vel = vec(0,0)
+            print("test")
+                
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
@@ -197,7 +209,7 @@ class MonsterA(pg.sprite.Sprite):
         self.collide_with_walls('y')
         # self.collide_with_monsters('y')
         self.chase_player()
-
+        self.collide_attack()
 class MonsterB(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.monsters, game.non_player, game.monsB
@@ -208,7 +220,15 @@ class MonsterB(pg.sprite.Sprite):
         self.rect = self.image.get_rect(centerx = x,centery = y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
-
+        self.health = 100
+    def collide_attack(self):
+        hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
+        for hit in hits:
+            self.health -= 5
+            if self.health == 0:
+                self.kill()
+            hit.vel = vec(0,0)
+            print("test")
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
@@ -283,7 +303,7 @@ class MonsterB(pg.sprite.Sprite):
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
         self.chase_player()
-
+        self.collide_attack()
 class MonsterC(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.monsters, game.non_player, game.monsC
@@ -294,7 +314,15 @@ class MonsterC(pg.sprite.Sprite):
         self.rect = self.image.get_rect(centerx = x,centery = y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
-
+        self.health = 100
+    def collide_attack(self):
+        hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
+        for hit in hits:
+            self.health -= 5
+            if self.health == 0:
+                self.kill()
+            hit.vel = vec(0,0)
+            print("test")
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.non_enemy, False)
@@ -369,7 +397,7 @@ class MonsterC(pg.sprite.Sprite):
         self.rect.y = self.pos.y
         self.collide_with_walls('y')
         self.chase_player()
-
+        self.collide_attack()
 class Wall(pg.sprite.Sprite):
     def __init__(self, game, x, y):
         self.groups = game.all_sprites, game.walls, game.non_enemy, game.non_player
@@ -384,7 +412,7 @@ class Wall(pg.sprite.Sprite):
         self.rect.y = y * TILESIZE
 class weapon_sprite(pg.sprite.Sprite):
     def __init__(self,game,x,y):
-        self.groups = game.all_sprites
+        self.groups = game.all_sprites,game.weapon_sprite
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = pg.Surface((TILESIZE,TILESIZE/8))
@@ -396,6 +424,8 @@ class weapon_sprite(pg.sprite.Sprite):
          self.pos += self.vel * self.game.dt
          self.rect.x = self.pos.x   
          self.rect.y = self.pos.y - 10
+         self.kill()
+                    
 #          def __init__(self, game,x,y):
 #         self.groups = game.all_sprites
 #         pg.sprite.Sprite.__init__(self, self.groups)
