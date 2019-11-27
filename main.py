@@ -7,6 +7,22 @@ from sprites import *
 from tilemap import *
 import random
 
+def draw_player_health(surf, x, y,pct):
+    if pct <0:
+        pct = 0
+    BAR_LENGTH = 100
+    BAR_HEIGHT = 20
+    fill = pct * BAR_LENGTH
+    outline_rect = pg.Rect(x,y, BAR_LENGTH, BAR_HEIGHT)
+    fill_rect = pg.Rect(x,y,fill, BAR_HEIGHT)
+    if pct > 0.6:
+        col= GREEN
+    elif pct > 0.3:
+        col = YELLOW
+    else:
+        col = RED
+    pg.draw.rect(surf,col,fill_rect)
+    pg.draw.rect(surf, WHITE, outline_rect,2)
 class Game:
     def __init__(self):
         pg.init()
@@ -21,6 +37,11 @@ class Game:
         img_folder = path.join(game_folder, 'img')
         self.map = Map(path.join(game_folder, 'map2.txt'))
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
+        self.monsA_img = pg.image.load(path.join(img_folder, MONSA_IMG)).convert_alpha()
+        self.monsB_img = pg.image.load(path.join(img_folder, MONSB_IMG)).convert_alpha()
+        self.monsC_img = pg.image.load(path.join(img_folder, MONSC_IMG)).convert_alpha()
+        self.walls_img = pg.image.load(path.join(img_folder, WALLS_IMG)).convert_alpha()
+        self.attack_img = pg.image.load(path.join(img_folder, ATTACK_IMG)).convert_alpha()
 
     def new(self):
         # initialize all variables and do all the setup for a new game
@@ -34,6 +55,7 @@ class Game:
         self.monsB = pg.sprite.Group()
         self.monsC = pg.sprite.Group()
         self.weapon_sprite = pg.sprite.Group()
+        self.monster_hitbox = pg.sprite.Group()
         # g = SquareGrid(self.map.width, self.map.height)
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
@@ -69,8 +91,18 @@ class Game:
         # update portion of the game loop
         self.all_sprites.update()
         self.camera.update(self.player)
-        
-
+        hits = pg.sprite.spritecollide(self.player,self.monsters,False)
+        for hit in hits:
+            self.player.health -= 5
+            hit.vel = vec(0,0)
+            if self.player.health <= 0:
+                self.playing = False
+        if hits:
+            if hits[0].rect.centerx < self.player.hit_rect.centerx:
+                self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+            if hits[0].rect.centerx > self.player.hit_rect.centerx:
+                self.player.pos -= vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+            
 
 
     def draw_grid(self):
@@ -82,10 +114,11 @@ class Game:
     def draw(self):
         self.screen.fill(BGCOLOR)
         for sprite in self.all_sprites:
-            if isinstance(sprite,Player):
-                sprite.draw_health()
             self.screen.blit(sprite.image, self.camera.apply(sprite))
+        # pg.draw.rect(self.screen, WHITE, self.camera.apply(self.player),2)
+        draw_player_health(self.screen,10,570,self.player.health / PLAYER_HEALTH)
         pg.display.flip()
+
 
     def events(self):
         # catch all events here
