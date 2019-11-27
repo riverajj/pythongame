@@ -5,14 +5,58 @@ from tilemap import collide_hit_rect
 
 vec = pg.math.Vector2
 
+
 class Player(pg.sprite.Sprite):
     def __init__(self, game, x, y):
+        
         self.groups = game.all_sprites,game.non_enemy
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
-        self.image = game.player_img
+        # self.image = game.player_img
         # self.image = pg.Surface((TILESIZE,TILESIZE * 2))
         # self.image.fill(YELLOW)
+        self.images = []
+        self.images.append(pg.image.load('player_down_01.png'))
+        self.images.append(pg.image.load('player_down_01.png'))
+        self.images.append(pg.image.load('player_down_01.png'))
+        self.images.append(pg.image.load('player_down_02.png'))
+        self.images.append(pg.image.load('player_down_02.png'))
+        self.images.append(pg.image.load('player_down_02.png'))
+        self.images.append(pg.image.load('player_down_03.png'))
+        self.images.append(pg.image.load('player_down_03.png'))
+        self.images.append(pg.image.load('player_down_03.png'))
+        self.images.append(pg.image.load('player_up_01.png'))
+        self.images.append(pg.image.load('player_up_01.png'))
+        self.images.append(pg.image.load('player_up_01.png'))
+        self.images.append(pg.image.load('player_up_02.png'))
+        self.images.append(pg.image.load('player_up_02.png'))
+        self.images.append(pg.image.load('player_up_02.png'))
+        self.images.append(pg.image.load('player_up_03.png'))
+        self.images.append(pg.image.load('player_up_03.png'))
+        self.images.append(pg.image.load('player_up_03.png'))
+        self.images.append(pg.image.load('player_right_01.png'))
+        self.images.append(pg.image.load('player_right_01.png'))
+        self.images.append(pg.image.load('player_right_01.png'))
+        self.images.append(pg.image.load('player_right_02.png'))
+        self.images.append(pg.image.load('player_right_02.png'))
+        self.images.append(pg.image.load('player_right_02.png'))
+        self.images.append(pg.image.load('player_right_03.png'))
+        self.images.append(pg.image.load('player_right_03.png'))
+        self.images.append(pg.image.load('player_right_03.png'))
+        self.images.append(pg.image.load('player_left_01.png'))
+        self.images.append(pg.image.load('player_left_01.png'))
+        self.images.append(pg.image.load('player_left_01.png'))
+        self.images.append(pg.image.load('player_left_02.png'))
+        self.images.append(pg.image.load('player_left_02.png'))
+        self.images.append(pg.image.load('player_left_02.png'))
+        self.images.append(pg.image.load('player_left_03.png'))
+        self.images.append(pg.image.load('player_left_03.png'))
+        self.images.append(pg.image.load('player_left_03.png'))
+        self.index = 0
+        self.index2 = 9
+        self.index3 = 18
+        self.index4 = 27
+        self.image = self.images[self.index]
         self.rect = self.image.get_rect(centerx=x,centery=y)
         self.vel = vec(0,0)
         self.pos = vec(x, y) * TILESIZE
@@ -46,15 +90,31 @@ class Player(pg.sprite.Sprite):
         if keys[pg.K_LEFT] or keys[pg.K_a]:
             self.vel.x = -PLAYER_SPEED
             self.direction = "LEFT"
+            self.index4 += 1
+            if self.index4 >= len(self.images):
+                self.index4 = 27
+            self.image = self.images[self.index4]
         if keys[pg.K_RIGHT] or keys[pg.K_d]:
             self.vel.x = PLAYER_SPEED
             self.direction ="RIGHT"
+            self.index3 +=1
+            if self.index3 >= 26:
+                self.index3 = 18
+            self.image = self.images[self.index3]
         if keys[pg.K_UP] or keys[pg.K_w]:
             self.vel.y = -PLAYER_SPEED
             self.direction ="UP"    
+            self.index2 += 1
+            if self.index2 >= 17:
+                self.index2 = 9
+            self.image = self.images[self.index2]
         if keys[pg.K_DOWN] or keys[pg.K_s]:
             self.vel.y = PLAYER_SPEED
             self.direction = "DOWN"
+            self.index +=1
+            if self.index >= 8:
+                self.index = 0
+            self.image = self.images[self.index]
         if keys[pg.K_z]:
             if self.direction == "UP":
                 weapon_sprite(self.game,self.pos.x, self.pos.y - 40)
@@ -143,7 +203,7 @@ class Player(pg.sprite.Sprite):
         #  self.draw_health()
 class MonsterA(pg.sprite.Sprite):
     def __init__(self, game, x, y):
-        self.groups = game.all_sprites, game.monsters, game.monsA
+        self.groups = game.all_sprites, game.monsters, game.monsA, game.non_player
         pg.sprite.Sprite.__init__(self, self.groups)
         self.game = game
         self.image = game.monsA_img

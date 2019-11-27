@@ -42,7 +42,7 @@ class Game:
         self.monsC_img = pg.image.load(path.join(img_folder, MONSC_IMG)).convert_alpha()
         self.walls_img = pg.image.load(path.join(img_folder, WALLS_IMG)).convert_alpha()
         self.attack_img = pg.image.load(path.join(img_folder, ATTACK_IMG)).convert_alpha()
-
+        
     def new(self):
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
