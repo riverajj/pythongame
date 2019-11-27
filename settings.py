@@ -27,7 +27,7 @@ PLAYER_IMG = 'rpg.png'
 PLAYER_HIT_RECT = pg.Rect(0, 0, 32, 64)
 #Monster settings
 MOB_DAMAGE = 2
-MONSTER_HIT_RECT = pg.Rect(0,0,64,64)
+MONSTER_HIT_RECT = pg.Rect(0,0,32,32)
 MONSA_IMG = 'bat.png'
 MONSB_IMG = 'bat.png'
 MONSC_IMG = 'bat.png'

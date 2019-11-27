@@ -161,7 +161,7 @@ class MonsterA(pg.sprite.Sprite):
     def collide_attack(self):
         hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
         for hit in hits:
-            self.health -= 20
+            self.health -= 5
             if self.health == 0:
                 self.kill()
             hit.vel = vec(0,0)          

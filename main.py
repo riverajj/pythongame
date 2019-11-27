@@ -97,11 +97,11 @@ class Game:
             hit.vel = vec(0,0)
             if self.player.health <= 0:
                 self.playing = False
-        if hits:
-            if hits[0].rect.centerx < self.player.hit_rect.centerx:
-                self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
-            if hits[0].rect.centerx > self.player.hit_rect.centerx:
-                self.player.pos -= vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+        # if hits:
+        #     if hits[0].rect.centerx < self.player.hit_rect.centerx:
+        #         self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
+        #     if hits[0].rect.centerx > self.player.hit_rect.centerx:
+        #         self.player.pos -= vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
             
 
 
