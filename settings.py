@@ -23,7 +23,11 @@ WALLS_IMG = 'walls.png'
 # Player settings
 PLAYER_SPEED = 300
 PLAYER_HEALTH = 100
+<<<<<<< HEAD
 PLAYER_IMG = 'player_up_01.png'
+=======
+PLAYER_IMG = 'player_down_02.png'
+>>>>>>> ea0f9cda5e40b790ef53da7853b0df5255d57916
 PLAYER_HIT_RECT = pg.Rect(0, 0, 32, 64)
 #Monster settings
 MOB_DAMAGE = 2
