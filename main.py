@@ -30,19 +30,48 @@ class Game:
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
         self.load_data()
+
         # self.squaregrid = SquareGrid(self.map.width, self.map.height)
 
     def load_data(self):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
+        self.level = 1
+        self.monsA = pg.sprite.Group()
         self.map = Map(path.join(game_folder, 'map2.txt'))
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.monsA_img = pg.image.load(path.join(img_folder, MONSA_IMG)).convert_alpha()
         self.monsB_img = pg.image.load(path.join(img_folder, MONSB_IMG)).convert_alpha()
         self.monsC_img = pg.image.load(path.join(img_folder, MONSC_IMG)).convert_alpha()
         self.walls_img = pg.image.load(path.join(img_folder, WALLS_IMG)).convert_alpha()
-        self.attack_img = pg.image.load(path.join(img_folder, ATTACK_IMG)).convert_alpha()
-        
+        self.attack_right = []
+        self.attack_right01 = pg.image.load(path.join(img_folder,'attack_right_01.png')).convert_alpha()
+        self.attack_right02 = pg.image.load(path.join(img_folder,'attack_right_02.png')).convert_alpha()
+        self.attack_right03 = pg.image.load(path.join(img_folder, 'attack_right_03.png')).convert_alpha()
+        self.attack_right.append(self.attack_right01)
+        self.attack_right.append(self.attack_right02)
+        self.attack_right.append(self.attack_right03)
+        self.attack_up = []
+        self.attack_up01 = pg.image.load(path.join(img_folder,'attack_up_01.png')).convert_alpha()
+        self.attack_up02 = pg.image.load(path.join(img_folder,'attack_up_02.png')).convert_alpha()
+        self.attack_up03 = pg.image.load(path.join(img_folder, 'attack_up_03.png')).convert_alpha()
+        self.attack_up.append(self.attack_up01)
+        self.attack_up.append(self.attack_up02)
+        self.attack_up.append(self.attack_up03)
+        self.attack_left = []
+        self.attack_left01 = pg.image.load(path.join(img_folder,'attack_left_01.png')).convert_alpha()
+        self.attack_left02 = pg.image.load(path.join(img_folder,'attack_left_02.png')).convert_alpha()
+        self.attack_left03 = pg.image.load(path.join(img_folder, 'attack_left_03.png')).convert_alpha()
+        self.attack_left.append(self.attack_left01)
+        self.attack_left.append(self.attack_left02)
+        self.attack_left.append(self.attack_left03)
+        self.attack_down = []
+        self.attack_down01 = pg.image.load(path.join(img_folder,'attack_down_01.png')).convert_alpha()
+        self.attack_down02 = pg.image.load(path.join(img_folder,'attack_down_02.png')).convert_alpha()
+        self.attack_down03 = pg.image.load(path.join(img_folder, 'attack_down_03.png')).convert_alpha()
+        self.attack_down.append(self.attack_down01)
+        self.attack_down.append(self.attack_down02)
+
     def new(self):
         # initialize all variables and do all the setup for a new game
         self.all_sprites = pg.sprite.Group()
@@ -51,7 +80,7 @@ class Game:
         self.monsters = pg.sprite.Group()
         self.non_enemy = pg.sprite.Group()
         self.non_player = pg.sprite.Group()
-        self.monsA = pg.sprite.Group()
+        # self.monsA = pg.sprite.Group()
         self.monsB = pg.sprite.Group()
         self.monsC = pg.sprite.Group()
         self.weapon_sprite = pg.sprite.Group()
@@ -97,6 +126,10 @@ class Game:
             hit.vel = vec(0,0)
             if self.player.health <= 0:
                 self.playing = False
+        # if len(self.monsA) == 0:
+        #     self.level += 1
+        #     if self.level == 1:
+        #         self.map = Map(path.join(path.dirname(__file__), 'map3.txt'))
         # if hits:
         #     if hits[0].rect.centerx < self.player.hit_rect.centerx:
         #         self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
@@ -105,11 +138,11 @@ class Game:
             
 
 
-    def draw_grid(self):
-        for x in range(0, WIDTH, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
-        for y in range(0, HEIGHT, TILESIZE):
-            pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
+    # def draw_grid(self):
+    #     for x in range(0, WIDTH, TILESIZE):
+    #         pg.draw.line(self.screen, LIGHTGREY, (x, 0), (x, HEIGHT))
+    #     for y in range(0, HEIGHT, TILESIZE):
+    #         pg.draw.line(self.screen, LIGHTGREY, (0, y), (WIDTH, y))
 
     def draw(self):
         self.screen.fill(BGCOLOR)

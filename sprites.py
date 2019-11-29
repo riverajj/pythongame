@@ -66,7 +66,10 @@ class Player(pg.sprite.Sprite):
         self.hit_rect = PLAYER_HIT_RECT #for collision
         self.hit_rect.center = self.rect.center # for collision
         self.direction = "direction"
-
+        self.attackrightindex = 0
+        self.attackupindex = 0
+        self.attackleftindex = 0
+        self.attackdownindex = 0
     def draw_hitbox(self):
         pg.draw.rect(self.image,RED,self.hit_rect)
    
@@ -117,15 +120,29 @@ class Player(pg.sprite.Sprite):
             self.image = self.images[self.index]
         if keys[pg.K_z]:
             if self.direction == "UP":
-                weapon_sprite(self.game,self.pos.x, self.pos.y - 40)
+                weapon = weapon_sprite(self.game,self.pos.x + 20, self.pos.y - 40)
+                self.attackupindex +=1
+                if self.attackupindex >= len(game.attack_up):
+                    self.attackupindex = 0
+                weapon.image = game.attack_up[self.attackupindex]
             elif self.direction == "RIGHT":
-                weapon = weapon_sprite(self.game,self.pos.x + 45, self.pos.y - 25)
-                weapon.image = game.attack_img
+                weapon = weapon_sprite(self.game,self.pos.x + 45, self.pos.y + 10)
+                self.attackrightindex +=1
+                if self.attackrightindex >= len(game.attack_right):
+                    self.attackrightindex = 0
+                weapon.image = game.attack_right[self.attackrightindex]
             elif self.direction == "LEFT":
-                weapon = weapon_sprite(self.game,self.pos.x - 10, self.pos.y - 10)  
-                weapon.image = pg.Surface((TILESIZE/8,TILESIZE))  
+                weapon = weapon_sprite(self.game,self.pos.x - 40, self.pos.y + 10)  
+                self.attackleftindex +=1
+                if self.attackleftindex >= len(game.attack_left):
+                    self.attackleftindex = 0
+                weapon.image = game.attack_left[self.attackleftindex]
             elif self.direction == "DOWN":
-                weapon_sprite(self.game,self.pos.x, self.pos.y + 40)
+                weapon =weapon_sprite(self.game,self.pos.x, self.pos.y + 40)
+                self.attackdownindex +=1
+                if self.attackdownindex >= len(game.attack_down):
+                    self.attackdownindex = 0
+                weapon.image = game.attack_down[self.attackdownindex]
         if self.vel.x != 0 and self.vel.y != 0:
             self.vel *= 0.7071
         # if pg.mouse.get_pressed()[0]:
@@ -225,7 +242,6 @@ class MonsterA(pg.sprite.Sprite):
             if self.health == 0:
                 self.kill()
             hit.vel = vec(0,0)          
-            print("test")
 
     def collide_with_walls(self, dir):
         if dir == 'x':
@@ -319,14 +335,14 @@ class MonsterB(pg.sprite.Sprite):
         self.pos = vec(x, y) * TILESIZE
         self.health = 100
         self.rot = 0
+        self.hit_rect = MONSTER_HIT_RECT
     def collide_attack(self):
         hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
         for hit in hits:
-            self.health -= 20
+            self.health -= 5
             if self.health == 0:
                 self.kill()
             hit.vel = vec(0,0)
-            print("test")
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -415,14 +431,14 @@ class MonsterC(pg.sprite.Sprite):
         self.pos = vec(x, y) * TILESIZE
         self.health = 100
         self.rot = 0
+        self.hit_rect = MONSTER_HIT_RECT
     def collide_attack(self):
         hits = pg.sprite.spritecollide(self, self.game.weapon_sprite, False) #collision
         for hit in hits:
-            self.health -= 20
+            self.health -= 5
             if self.health == 0:
                 self.kill()
             hit.vel = vec(0,0)
-            print("test")
     def collide_with_walls(self, dir):
         if dir == 'x':
             hits = pg.sprite.spritecollide(self, self.game.walls, False)
@@ -524,6 +540,7 @@ class weapon_sprite(pg.sprite.Sprite):
     def update(self):
          self.pos += self.vel * self.game.dt
          self.kill()
+
 # class MonsterHitbox(pg.sprite.Sprite):
 #     def __init__(self,game,monster):
 #         self.groups = game.all_sprites,  game.monster_hitbox
