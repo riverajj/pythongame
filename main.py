@@ -86,6 +86,7 @@ class Game:
         self.weapon_sprite = pg.sprite.Group()
         self.monster_hitbox = pg.sprite.Group()
         # g = SquareGrid(self.map.width, self.map.height)
+        #a
         for row, tiles in enumerate(self.map.data):
             for col, tile in enumerate(tiles):
                 if tile == '1':
