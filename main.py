@@ -6,7 +6,6 @@ from settings import *
 from sprites import *
 from tilemap import *
 import random
-
 def draw_player_health(surf, x, y,pct):
     if pct <0:
         pct = 0
@@ -42,6 +41,8 @@ class Game:
         self.level = level
         self.map_name = 'map' + str(self.level) + '.txt'
         self.map = Map(path.join(game_folder, self.map_name))
+        self.title_font = path.join(img_folder, 'Roboto-Light.ttf')
+        self.hud_font = path.join(img_folder, 'Roboto-Light.ttf')
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.monsA_img = pg.image.load(path.join(img_folder, MONSA_IMG)).convert_alpha()
         self.monsB_img = pg.image.load(path.join(img_folder, MONSB_IMG)).convert_alpha()
@@ -130,7 +131,7 @@ class Game:
             self.player.health -= 5
             hit.vel = vec(0,0)
             if self.player.health <= 0:
-                self.level = 0
+                self.playing = False
         # if len(self.monsA) == 0:
         #     self.level += 1
         #     if self.level == 1:
@@ -146,7 +147,7 @@ class Game:
                     for sprite in self.all_sprites:
                         sprite.kill()
                     self.level += 1
-                    if(self.level > 6):
+                    if(self.level >= 6):
                         self.level = 6 
                     print(self.level)
                     self.load_data(self.level)
@@ -177,11 +178,57 @@ class Game:
                 if event.key == pg.K_ESCAPE:
                     self.quit()
     def show_start_screen(self):
-        pass
-
+        game_folder = path.dirname(__file__)
+        img_folder = path.join(game_folder, 'img')
+        self.screen.fill(LIGHTGREY)
+        self.menu_image = pg.image.load(path.join(img_folder,'menu_screen.png'))
+        self.screen.blit(self.menu_image,(0,100))
+        self.draw_text('WIZ KO LANG',self.title_font, 24, BLACK, WIDTH / 2,HEIGHT / 2, align="center")
+        self.draw_text('Press any key to start',self.title_font,12,BLACK, WIDTH/2, HEIGHT * 3 / 4, align = "center")
+        pg.display.flip()
+        self.wait_for_key()
     def show_go_screen(self):
-        pass
-
+        self.draw_text('GAME OVER',self.title_font, 24, RED, WIDTH / 2,HEIGHT / 2, align="center")
+        self.draw_text('Press a key to start again',self.title_font,12,WHITE, WIDTH/2, HEIGHT * 3 / 4, align = "center")
+        self.level = 1
+        self.new()
+        self.load_data(self.level)
+        pg.display.flip()
+        self.wait_for_key()
+    def wait_for_key(self):
+        pg.event.wait()
+        waiting = True
+        while waiting:
+            self.clock.tick(FPS)
+            for event in pg.event.get():
+                if event.type == pg.QUIT:
+                    waiting = False
+                    self.quit()
+                if event.type == pg.KEYUP:
+                    waiting = False
+    def draw_text(self, text, font_name, size, color, x, y, align="nw"):
+        font = pg.font.Font(font_name, size)
+        text_surface = font.render(text, True, color)
+        text_rect = text_surface.get_rect()
+        if align == "nw":
+            text_rect.topleft = (x, y)
+        if align == "ne":
+            text_rect.topright = (x, y)
+        if align == "sw":
+            text_rect.bottomleft = (x, y)
+        if align == "se":
+            text_rect.bottomright = (x, y)
+        if align == "n":
+            text_rect.midtop = (x, y)
+        if align == "s":
+            text_rect.midbottom = (x, y)
+        if align == "e":
+            text_rect.midright = (x, y)
+        if align == "w":
+            text_rect.midleft = (x, y)
+        if align == "center":
+            text_rect.center = (x, y)
+        self.screen.blit(text_surface, text_rect)
 # create the game object
 g = Game()
 g.show_start_screen()
