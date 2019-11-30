@@ -29,16 +29,19 @@ class Game:
         self.screen = pg.display.set_mode((WIDTH, HEIGHT))
         pg.display.set_caption(TITLE)
         self.clock = pg.time.Clock()
-        self.load_data()
+        self.level = 1
+        self.load_data(self.level)
+        self.game_started = False
 
         # self.squaregrid = SquareGrid(self.map.width, self.map.height)
 
-    def load_data(self):
+    def load_data(self, level):
         game_folder = path.dirname(__file__)
         img_folder = path.join(game_folder, 'img')
-        self.level = 1
         self.monsA = pg.sprite.Group()
-        self.map = Map(path.join(game_folder, 'map2.txt'))
+        self.level = level
+        self.map_name = 'map' + str(self.level) + '.txt'
+        self.map = Map(path.join(game_folder, self.map_name))
         self.player_img = pg.image.load(path.join(img_folder, PLAYER_IMG)).convert_alpha()
         self.monsA_img = pg.image.load(path.join(img_folder, MONSA_IMG)).convert_alpha()
         self.monsB_img = pg.image.load(path.join(img_folder, MONSB_IMG)).convert_alpha()
@@ -114,6 +117,7 @@ class Game:
             self.update()
             self.draw()
     def quit(self):
+
         pg.quit()
        
 
@@ -126,7 +130,7 @@ class Game:
             self.player.health -= 5
             hit.vel = vec(0,0)
             if self.player.health <= 0:
-                self.playing = False
+                self.level = 0
         # if len(self.monsA) == 0:
         #     self.level += 1
         #     if self.level == 1:
@@ -136,7 +140,17 @@ class Game:
         #         self.player.pos += vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
         #     if hits[0].rect.centerx > self.player.hit_rect.centerx:
         #         self.player.pos -= vec(MOB_KNOCKBACK, 0).rotate(-hits[0].rot)
-            
+        if len(self.monsA) == 0 :
+            if len(self.monsB) == 0 :
+                if len(self.monsC) == 0: 
+                    for sprite in self.all_sprites:
+                        sprite.kill()
+                    self.level += 1
+                    if(self.level > 6):
+                        self.level = 6 
+                    print(self.level)
+                    self.load_data(self.level)
+                    self.new()
 
 
     # def draw_grid(self):
